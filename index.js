@@ -15,18 +15,28 @@ app.get('/', (req, res) => {
     `);
 });
 
-app.post('/', (req, res) => {
-    //on === addEventListener
-    req.on('data', data => { 
-        const parsed = data.toString('utf8').split('&');
-        const formData = {};
-        for (let pair of parsed) {
-            const [key, value] = pair.split('=');
-            formData[key] = value;
+//middleware function
+const bodyParser = (req, res, next) => {
+    if (req.method = "POST") {
+        req.on('data', data => {
+            const parsed = data.toString('utf8').split('&');
+            const formData = {};
+            for (let pair of parsed) {
+                const [key, value] = pair.split('=');
+                formData[key] = value;
         }
-        console.log(formData);
-    })
-    res.send('Account created.')
+            req.body = formData;
+            next(); // tell the express the call the next callback function
+        });
+    } else {
+        next();
+    }
+};
+
+//put the middleware function right b4 the callback function
+app.post('/', bodyParser, (req, res) => {
+    console.log(req.body);
+    res.send('Account created.');
 });
 
 app.listen(3000, () => {
