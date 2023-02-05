@@ -8,24 +8,17 @@ class UsersRepository {
         }
         this.filename = filename;
         try { 
-            fs.accessSynv(this.filename);
+            fs.accessSync(this.filename);
         } catch (err) {
             fs.writeFileSync(this.filename, '[]');
         }
     }
+
     async getAll() {
         //refactoring version:
         return JSON.parse(await fs.promises.readFile(this.filename, {
             encoding: 'utf8'
         }));
-        // //Open the file called this.filename
-        // const contents = await fs.promises.readFile(this.filename, {
-        //     encoding: 'utf8'
-        // });
-        // //Parse the contents
-        // const data = JSON.parse(contents);
-        // //Return the parsed data
-        // return data;
     }
 
     async create(attrs) {
@@ -33,6 +26,7 @@ class UsersRepository {
         const records = await this.getAll();
         records.push(attrs);
         await this.writeAll(records);
+        return attrs;
     }
 
     async writeAll(records) {
@@ -80,4 +74,16 @@ class UsersRepository {
     };
 }
 
- module.exports = new UsersRepository('users.json');
+// const test = async () => { 
+//     const repo = new UsersRepository('users.json');
+
+//     await repo.create({ email: 'test@test.com', password: 'password' });
+
+//     const users = await repo.getAll();
+
+//     console.log(users);
+// }
+
+// test();
+
+module.exports = new UsersRepository('users.json');

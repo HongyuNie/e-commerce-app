@@ -1,15 +1,21 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const cookieSession = require('cookie-session');
 const usersRepo = require('./repositories/users');
 
 const app = express();
 
 //pass a middleware function, let all the route handlders have it applied
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cookieSession({
+    keys: ['lsfjddldfjs324gfdrytgr']
+}));
+
 
 app.get('/', (req, res) => {
     res.send(`
         <div>
+           Your id is:  ${req.session.userId}
             <form method="POST">
                 <input name="email"  placeholder = "email"/>
                 <input name="password" placeholder = "password"/>
@@ -30,6 +36,13 @@ app.post('/', async (req, res) => {
     if (password !== passwordConfirmation) {
         return res.send('Password must match!');
     }
+    //create a user in our user repo to represent this person
+    const user = await usersRepo.create({ email, password });
+    //store the id of that user inside the users cookie
+    req.session.userId = user.id;  //added by cookie session
+
+
+
     res.send('Account created.');
 });
 
