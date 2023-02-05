@@ -59,7 +59,7 @@ class UsersRepository {
         await this.writeAll(records);
     }
 
-    async getOneBy() { 
+    async getOneBy(filters) { 
         const records = await this.getAll();
 
         for (let record of records) {
